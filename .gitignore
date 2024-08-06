@@ -3,7 +3,7 @@
 #
 
 data/
-.[ao]
+*.[ao]
 .so
 injector
 injector_32

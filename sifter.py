@@ -8,6 +8,7 @@
 
 # run as sudo for best results
 
+from __future__ import absolute_import
 import signal
 import sys
 import subprocess
@@ -118,7 +119,7 @@ def disas_capstone(b):
         else:
             md = Cs(CS_ARCH_X86, CS_MODE_32)
     try:
-        (address, size, mnemonic, op_str) = md.disasm_lite(b, 0, 1).next()
+        (address, size, mnemonic, op_str) = next(md.disasm_lite(b, 0, 1))
     except StopIteration:
         mnemonic="(unk)"
         op_str=""
@@ -208,7 +209,7 @@ def result_string(insn, result):
     s = "%30s %2d %2d %2d %2d (%s)\n" % (
             hexlify(insn), result.valid,
             result.length, result.signum,
-            result.sicode, hexlify(cstr2py(result.raw_insn)))
+            result.sicode, hexlify(result.raw_insn))
     return s
 
 class Injector:
@@ -479,7 +480,7 @@ class Gui:
             self.vaddstr(self.stdscr, left - 3, top + top_bracket_middle + 5, "sifter", self.gray(.2))
 
             # refresh instruction log
-            synth_insn = cstr2py(self.T.r.raw_insn)
+            synth_insn = self.T.r.raw_insn
             (mnemonic, op_str, size) = self.disas(synth_insn)
             self.T.il.append(
                     (
@@ -607,7 +608,7 @@ class Gui:
                 try:
                     for (i, r) in enumerate(self.T.al):
                         y = top_bracket_height + 5 + i
-                        insn_hex = hexlify(cstr2py(r.raw_insn))
+                        insn_hex = hexlify(r.raw_insn)
 
                         # unexplainable hack to remove some of the unexplainable
                         # flicker on my console.  a bug in ncurses?  doesn't
@@ -666,7 +667,7 @@ class Gui:
 
             self.checkkey()
 
-            synth_insn = cstr2py(self.T.r.raw_insn)
+            synth_insn = self.T.r.raw_insn
 
             if synth_insn and not self.ts.pause:
                 self.draw()
@@ -733,7 +734,7 @@ def cleanup(gui, poll, injector, ts, tests, command_line, args):
 
     if args.save:
         with open(LAST, "w") as f:
-            f.write(hexlify(cstr2py(tests.r.raw_insn)))
+            f.write(hexlify(tests.r.raw_insn).hex())
 
     sys.exit(0)
 
@@ -791,7 +792,7 @@ def main():
 
     if not args.len and not args.unk and not args.dis and not args.ill:
         print("warning: no search type (--len, --unk, --dis, --ill) specified, results will not be recorded.")
-        raw_input()
+        input()
 
     if args.resume:
         if "-i" in injector_args:

@@ -142,7 +142,7 @@ def init_mutator():
 
 def disas(b):
     try:
-        (address, size, mnemonic, op_str) = md.disasm_lite(b, 0x1000, 1).next()
+        (address, size, mnemonic, op_str) = next(md.disasm_lite(b, 0x1000, 1))
     except StopIteration:
         mnemonic="(unk)"
         op_str=""

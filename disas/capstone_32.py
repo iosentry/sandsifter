@@ -11,12 +11,12 @@ else:
 
 md = Cs(CS_ARCH_X86, CS_MODE_32)
 try:
-    (address, size, mnemonic, op_str) = md.disasm_lite(unhexlify(byte_string), 0, 1).next()
+    (address, size, mnemonic, op_str) = next(md.disasm_lite(unhexlify(byte_string), 0, 1))
 except StopIteration:
     mnemonic="(unk)"
     op_str=""
     size = 0
 
-print "%s %s" % (mnemonic, op_str)
-print byte_string[:size*2]
-print "%d bytes" % size
+print("%s %s" % (mnemonic, op_str))
+print(byte_string[:size*2])
+print("%d bytes" % size)

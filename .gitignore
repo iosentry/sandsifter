@@ -1,0 +1,10 @@
+#
+# Files excluded from the repository
+#
+
+data/
+.[ao]
+.so
+injector
+injector_32
+

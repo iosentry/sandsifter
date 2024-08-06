@@ -17,6 +17,7 @@ from capstone import *
 from pyutil.progress import progress
 from collections import namedtuple
 from binascii import *
+from six.moves import range
 import sys
 import time
 import tempfile
@@ -297,7 +298,8 @@ def check_disassembler(name):
         subprocess.Popen(
                 ['which', name],
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
+		text=True
                 ).communicate()
     return result.strip() != ""
 
@@ -312,7 +314,8 @@ def disassemble(disassembler, bitness, data):
                     disassemblers[disassembler][bitness][0].format(temp_file.name),
                     shell=True,
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
+                    stderr=subprocess.PIPE,
+		    text=True
                     ).communicate()
 
         disas = cleanup(result)
@@ -323,7 +326,8 @@ def disassemble(disassembler, bitness, data):
                     disassemblers[disassembler][bitness][1].format(temp_file.name),
                     shell=True,
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
+                    stderr=subprocess.PIPE,
+		    text=True
                     ).communicate()
 
         raw = cleanup(result)
@@ -341,7 +345,7 @@ def cleanup(disas):
     return disas
 
 def instruction_length(raw):
-    return len(raw)/2
+    return len(raw)//2
 
 def print_catalog(c, depth=0):
     for v in c.v:
@@ -444,7 +448,7 @@ if __name__ == "__main__":
         lines = f.readlines()
         f.seek(0)
         for (i, l) in enumerate(lines):
-            progress(i, len(lines)-1, refresh=len(lines)/1000)
+            progress(i, len(lines)-1, refresh=len(lines)//1000)
             if l.startswith("#"):
                 #TODO: this is not robust
                 if "arch:" in l and "64" in l:
@@ -479,7 +483,7 @@ if __name__ == "__main__":
     all_results = {} # lookup table for condensed result to all results
     d = {} # lookup table for base instruction to instruction summary
     for (c, i) in enumerate(instructions):
-        progress(c, len(instructions) - 1, refresh=len(instructions)/1000)
+        progress(c, len(instructions) - 1, refresh=len(instructions)//1000)
         s = strip_prefixes(i.raw, prefixes)
         p = get_prefixes(i.raw, prefixes)
         if len(s) == len(i.raw):
@@ -529,7 +533,7 @@ if __name__ == "__main__":
             else:
                 c.v.append(i)
                 bin_progress = bin_progress + 1
-                progress(bin_progress, progress_out_of, refresh=progress_out_of/1000)
+                progress(bin_progress, progress_out_of, refresh=progress_out_of//1000)
         for b in c.d:
             (c.d[b], bin_progress) = bin(c.d[b], index + 1, base + b, bin_progress, progress_out_of)
         return (c, bin_progress)
@@ -605,7 +609,7 @@ if __name__ == "__main__":
         gui.box(gui.window, infobox_x, infobox_y, infobox_width, infobox_height, gui.gray(.3))
 
 	#TODO: (minor) this should really be done properly with windows
-        for i in xrange(infobox_y + 1, infobox_y + infobox_height - 1):
+        for i in range(infobox_y + 1, infobox_y + infobox_height - 1):
             gui.window.addstr(i, infobox_x + 1, " " * (infobox_width - 2), gui.gray(0))
 
         if type(o) == Catalog:
@@ -775,13 +779,13 @@ if __name__ == "__main__":
         if key == ord('k'):
             textbox.scroll_up()
         elif key == ord('K'):
-            for _ in xrange(10):
+            for _ in range(10):
                 textbox.scroll_up()
                 smooth_scroll()
         elif key == ord('j'):
             textbox.scroll_down()
         elif key == ord('J'):
-            for _ in xrange(10):
+            for _ in range(10):
                 textbox.scroll_down()
                 smooth_scroll()
         elif key == ord('l'):
@@ -840,7 +844,7 @@ if __name__ == "__main__":
     title = "PROCESSOR ANALYSIS SUMMARY"
     width = 50
     print "=" * width
-    print " " * ((width - len(title)) / 2) + title
+    print " " * ((width - len(title)) // 2) + title
     print "=" * width
     print
     print processor.model_name

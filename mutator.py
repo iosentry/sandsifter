@@ -50,7 +50,7 @@ prefixes=[
     "\x67"  # addr
     ]
 
-injector_bitness, errors = subprocess.Popen(['file', 'injector'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+injector_bitness, errors = subprocess.Popen(['file', 'injector'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()
 arch = re.search(r".*(..)-bit.*", injector_bitness).group(1)
 
 if arch == "64":

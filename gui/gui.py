@@ -1,5 +1,6 @@
 import curses
 import locale
+from six.moves import range
 
 class Box:
     def __init__(self, gui, window, x, y, w, h, color):
@@ -72,11 +73,11 @@ class TextBox:
             l = l.ljust(self.w - 2)
             self.window.addstr(self.y + 1 + i, self.x + 1, l, self.text_color if
                     self.selected_index != self.scroll_index + i else self.selected_color)
-        for j in xrange(i + 1, self.h - 2):
+        for j in range(i + 1, self.h - 2):
             self.window.addstr(self.y + 1 + j, self.x + 1, " " * (self.w - 2), self.text_color if
                     self.selected_index != self.scroll_index + j else self.selected_color)
         self.gui.vscrollbar(self.window, self.x + self.w, self.y, self.h,
-                self.selected_index / float(len(self.text)), self.gui.gray(1))
+                self.selected_index // float(len(self.text)), self.gui.gray(1))
 
 class Gui:
     GRAY_BASE = 50
@@ -130,12 +131,12 @@ class Gui:
             curses.init_color(self.COLOR_RED, 1000, 0, 0)
             curses.init_color(self.COLOR_GREEN, 0, 1000, 0)
 
-            for i in xrange(0, self.GRAYS):
+            for i in range(0, self.GRAYS):
                 curses.init_color(
                         self.GRAY_BASE + i,
-                        i * 1000 / (self.GRAYS - 1),
-                        i * 1000 / (self.GRAYS - 1),
-                        i * 1000 / (self.GRAYS - 1)
+                        i * 1000 // (self.GRAYS - 1),
+                        i * 1000 // (self.GRAYS - 1),
+                        i * 1000 // (self.GRAYS - 1)
                         )
                 curses.init_pair(
                         self.GRAY_BASE + i,
@@ -150,7 +151,7 @@ class Gui:
             self.COLOR_RED = curses.COLOR_RED
             self.COLOR_GREEN = curses.COLOR_GREEN
 
-            for i in xrange(0, self.GRAYS):
+            for i in range(0, self.GRAYS):
                 curses.init_pair(
                         self.GRAY_BASE + i,
                         self.COLOR_WHITE,
@@ -170,10 +171,10 @@ class Gui:
             return curses.color_pair(self.WHITE)
 
     def box(self, window, x, y, w, h, color):
-        for i in xrange(1, w - 1):
+        for i in range(1, w - 1):
             window.addch(y, x + i, curses.ACS_HLINE, color)
             window.addch(y + h - 1, x + i, curses.ACS_HLINE, color)
-        for i in xrange(1, h - 1):
+        for i in range(1, h - 1):
             window.addch(y + i, x, curses.ACS_VLINE, color)
             window.addch(y + i, x + w - 1, curses.ACS_VLINE, color)
         window.addch(y, x, curses.ACS_ULCORNER, color)
@@ -182,13 +183,13 @@ class Gui:
         window.addch(y + h - 1, x + w - 1, curses.ACS_LRCORNER, color)
 
     def bracket(self, window, x, y, h, color):
-        for i in xrange(1, h - 1):
+        for i in range(1, h - 1):
             window.addch(y + i, x, curses.ACS_VLINE, color)
         window.addch(y, x, curses.ACS_ULCORNER, color)
         window.addch(y + h - 1, x, curses.ACS_LLCORNER, color)
 
     def vaddstr(self, window, x, y, s, color):
-        for i in xrange(0, len(s)):
+        for i in range(0, len(s)):
             window.addch(y + i, x, s[i], color)
 
     def vscrollbar(self, window, x, y, height, progress, color):
